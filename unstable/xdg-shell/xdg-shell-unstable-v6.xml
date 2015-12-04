@@ -183,6 +183,23 @@
       <arg name="y" type="int"/>
     </request>
 
+    <request name="get_tooltip">
+      <description summary="assign the xdg_tooltip surface role">
+	This creates an xdg_tooltip for the given xdg_surface and gives the
+	associated wl_surface the xdg_tooltip role. A wl_surface can only have
+	one xdg_tooltip role. If the wl_surface is given the xdg_tooltip role
+	while it already has an active xdg_tooltip role, or if it has been given
+	any other role before, an error is raised.
+
+	See the documentation of xdg_tooltip for more details about what an
+	xdg_tooltip is and how it is used.
+      </description>
+      <arg name="id" type="new_id" interface="zxdg_tooltip_v6"/>
+      <arg name="parent" type="object" interface="zxdg_surface_v6"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
+
     <request name="set_window_geometry">
       <description summary="set the new window geometry">
 	The window geometry of a surface is its "visible bounds" from the
@@ -664,6 +681,36 @@
       </description>
     </event>
 
+  </interface>
+
+  <interface name="zxdg_tooltip_v6">
+    <description summary="tooltip surface">
+      This interface defines an xdg_tooltip role that provides functionality
+      related to tooltip like surfaces.
+
+      An xdg_tooltip is temporary a surface that is part of another xdg_surface
+      (such as xdg_toplevel or xdg_popup) such as a tooltip above a UI widget. It
+      will always be mapped above both its parent and if the parent has a
+      xdg_popup child it will also be mapped above that and all other possible
+      chained xdg_popup surfaces.
+
+      The parent surface must either have the surface role xdg_toplevel,
+      xdg_popup or xdg_tooltip.
+
+      Being different from xdg_popup, it does not take an active grab while
+      being mapped, and it will never be automatically dismissed by any
+      predefined user interaction. The client must itself unmap it using the
+      xdg_tooltip.destroy request.
+
+      An xdg_tooltip can receive input assuming it has an input region.
+
+      If for some reason its parent is unmapped, for example if the parent is a
+      popup being dismissed, the tooltip will be unmapped as well.
+    </description>
+
+    <request name="destroy" type="destructor">
+      Unmap the tooltip surface and destroy the object.
+    </request>
   </interface>
 
 </protocol>
