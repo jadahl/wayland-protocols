@@ -65,29 +65,6 @@
       <arg name="surface" type="object" interface="wl_surface"/>
     </request>
 
-    <request name="get_xdg_popup">
-      <description summary="create a popup for a surface">
-	This creates an xdg_popup for the given surface and gives it the
-	xdg_popup role. A wl_surface can only be given an xdg_popup role
-	once. If get_xdg_popup is called with a wl_surface that already has
-	an active xdg_popup associated with it, or if it had any other role,
-	an error is raised.
-
-	This request must be used in response to some sort of user action
-	like a button press, key press, or touch down event.
-
-	See the documentation of xdg_popup for more details about what an
-	xdg_popup is and how it is used.
-      </description>
-      <arg name="id" type="new_id" interface="zxdg_popup_v6"/>
-      <arg name="surface" type="object" interface="wl_surface"/>
-      <arg name="parent" type="object" interface="wl_surface"/>
-      <arg name="seat" type="object" interface="wl_seat" summary="the wl_seat of the user event"/>
-      <arg name="serial" type="uint" summary="the serial of the user event"/>
-      <arg name="x" type="int"/>
-      <arg name="y" type="int"/>
-    </request>
-
     <event name="ping">
       <description summary="check if the client is alive">
 	The ping event asks the client if it's still alive. Pass the
@@ -654,7 +631,7 @@
       The x and y arguments passed when creating the popup object specify
       where the top left of the popup should be placed, relative to the
       local surface coordinates of the parent surface. See
-      xdg_shell.get_xdg_popup.
+      xdg_surface.get_popup.
 
       The client must call wl_surface.commit on the corresponding wl_surface
       for the xdg_popup state to take effect.
