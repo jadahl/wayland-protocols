@@ -86,9 +86,9 @@
 	  details.
 	</description>
       </entry>
-      <entry name="recurring" value="2">
+      <entry name="reoccurring" value="2">
 	<description summary="the pointer constraint is may reactivate">
-	  A recurring pointer constraint may again reactivate once it has
+	  A reoccurring pointer constraint may again reactivate once it has
 	  been deactivated. See the corresponding deactivation event
 	  (wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for
 	  details.
@@ -264,7 +264,7 @@
 	Notification that the pointer lock of the seat's pointer is no longer
 	active. If this is a oneshot pointer lock (see
 	wp_pointer_constraints.lifetime) this object is now defunct and should
-	be destroyed. If this is a recurring pointer lock (see
+	be destroyed. If this is a reoccurring pointer lock (see
 	wp_pointer_constraints.lifetime) this the pointer lock may again
 	reactivate in the future.
       </description>
@@ -307,14 +307,13 @@
 	applied. See wl_surface.commit for details.
 
 	If the confinement is active when the new confinement region is applied
-	and the pointer ends up outside of newly applied region, the pointer is
+	and the pointer ends up outside of newly applied region, the pointer may
 	warped to a position within the new confinement region. If warped, a
 	wl_pointer.motion event will be emitted, but no
 	wp_relative_pointer.relative_motion event.
 
-	If the effective confinement region (the intersection of the applied
-	confinement region and the input region of the corresponding wl_surface)
-	is empty, an active confinement would be deactivated.
+	The compositor may also, instead of using the new region, unconfine the
+	pointer.
 
 	For details about the confine region, see wp_confined_pointer.
       </description>
@@ -335,7 +334,7 @@
 	Notification that the pointer confinement of the seat's pointer is no
 	longer active. If this is a oneshot pointer confinement (see
 	wp_pointer_constraints.lifetime) this object is now defunct and should
-	be destroyed. If this is a recurring pointer confinement (see
+	be destroyed. If this is a reoccurring pointer confinement (see
 	wp_pointer_constraints.lifetime) this the pointer confinement may again
 	reactivate in the future.
       </description>
