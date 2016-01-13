@@ -56,9 +56,10 @@
       wp_locked_pointer and wp_confined_pointer respectively, and the client can
       use these objects to interact with the lock.
 
-      For any surface, only one lock or confinement per seat may be active at
-      any time. If a lock or confinement is requested when another lock or
-      confinement is active or requested on that surface and seat, an
+      For any surface, only one lock or confinement may be active across all
+      wl_pointer objects of the same seat. If a lock or confinement is requested
+      when another lock or confinement is active or requested on the same surface
+      and with any of the wl_pointer objects of the same seat, an
       'already_constrained' error will be raised.
     </description>
 
@@ -79,15 +80,15 @@
       </description>
       <entry name="oneshot" value="1">
 	<description summary="the pointer constraint is defunct once deactivated">
-	  A oneshot pointer constraint will never re-activate once it has been
+	  A oneshot pointer constraint will never reactivate once it has been
 	  deactivated. See the corresponding deactivation event
 	  (wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for
 	  details.
 	</description>
       </entry>
-      <entry name="reoccurring" value="2">
-	<description summary="the pointer constraint is defunct once deactivated">
-	  A reoccurring pointer constraint may again re-activate once it has
+      <entry name="recurring" value="2">
+	<description summary="the pointer constraint is may reactivate">
+	  A recurring pointer constraint may again reactivate once it has
 	  been deactivated. See the corresponding deactivation event
 	  (wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for
 	  details.
@@ -116,10 +117,10 @@
 	constraints cannot ever be satisfied. It is thus possible to request a
 	lock that will never activate.
 
-	There may not be another lock of any kind requested or active on the
-	surface for the seat of the given pointer when requesting a lock. If
-	there is, an error will be raised. See general pointer lock
-	documentation for more details.
+	There may not be another pointer constraint of any kind requested or
+	active on the surface for any of the wl_pointer objects of the seat of
+	the passed pointer when requesting a lock. If there is, an error will be
+	raised. See general pointer lock documentation for more details.
 
 	The intersection of the region passed with this request and the input
 	region of the surface is used to determine where the pointer must be
@@ -129,7 +130,7 @@
 
 	A surface may receive pointer focus without the lock being activated.
 
-	The request will create a new object wp_locked_pointer which is used to
+	The request creates a new object wp_locked_pointer which is used to
 	interact with the lock as well as receive updates about its state. See
 	the the description of wp_locked_pointer for further information.
 
@@ -198,8 +199,7 @@
       the wp_locked_pointer object.
 
       If the compositor decides to unlock the pointer the unlocked event is
-      sent. The wp_locked_pointer object is at this point defunct and should be
-      destroyed.
+      sent. See wp_locked_pointer.unlock for details.
 
       When unlocking, the compositor may warp the cursor position to the set
       cursor position hint. If it does, it will not result in any relative
@@ -264,7 +264,7 @@
 	Notification that the pointer lock of the seat's pointer is no longer
 	active. If this is a oneshot pointer lock (see
 	wp_pointer_constraints.lifetime) this object is now defunct and should
-	be destroyed. If this is a reoccurring pointer lock (see
+	be destroyed. If this is a recurring pointer lock (see
 	wp_pointer_constraints.lifetime) this the pointer lock may again
 	reactivate in the future.
       </description>
@@ -312,6 +312,10 @@
 	wl_pointer.motion event will be emitted, but no
 	wp_relative_pointer.relative_motion event.
 
+	If the effective confinement region (the intersection of the applied
+	confinement region and the input region of the corresponding wl_surface)
+	is empty, an active confinement would be deactivated.
+
 	For details about the confine region, see wp_confined_pointer.
       </description>
 
@@ -331,7 +335,7 @@
 	Notification that the pointer confinement of the seat's pointer is no
 	longer active. If this is a oneshot pointer confinement (see
 	wp_pointer_constraints.lifetime) this object is now defunct and should
-	be destroyed. If this is a reoccurring pointer confinement (see
+	be destroyed. If this is a recurring pointer confinement (see
 	wp_pointer_constraints.lifetime) this the pointer confinement may again
 	reactivate in the future.
       </description>
