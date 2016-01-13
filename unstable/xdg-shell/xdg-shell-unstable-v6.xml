@@ -65,6 +65,14 @@
       <arg name="surface" type="object" interface="wl_surface"/>
     </request>
 
+    <request name="pong">
+      <description summary="respond to a ping event">
+	A client must respond to a ping event with a pong request or
+	the client may be deemed unresponsive.
+      </description>
+      <arg name="serial" type="uint" summary="serial of the ping event"/>
+    </request>
+
     <event name="ping">
       <description summary="check if the client is alive">
 	The ping event asks the client if it's still alive. Pass the
@@ -81,14 +89,6 @@
       </description>
       <arg name="serial" type="uint" summary="pass this to the pong request"/>
     </event>
-
-    <request name="pong">
-      <description summary="respond to a ping event">
-	A client must respond to a ping event with a pong request or
-	the client may be deemed unresponsive.
-      </description>
-      <arg name="serial" type="uint" summary="serial of the ping event"/>
-    </request>
   </interface>
 
   <interface name="zxdg_surface_v6" version="1">
