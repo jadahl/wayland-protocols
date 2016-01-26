@@ -105,6 +105,9 @@
       has not been given any role. To give it a role, use one of the functions
       creating xdg surface role specific objects: get_toplevel, get_popup.
 
+      A role must be assigned before any other requests are made to the
+      xdg_surface object.
+
       The client must call wl_surface.commit on the corresponding wl_surface
       for the xdg_surface state to take effect.
 
@@ -116,6 +119,11 @@
       For a surface to be mapped by the compositor the client must have
       committed both an xdg_surface state and a buffer.
     </description>
+
+    <enum name="error">
+      <entry name="not_constructed" value="1"/>
+      <entry name="already_constructed" value="1"/>
+    </enum>
 
     <request name="destroy" type="destructor">
       <description summary="Destroy the xdg_surface">
@@ -254,7 +262,7 @@
     </event>
   </interface>
 
-  <interface name="zxdg_toplevel_v6">
+  <interface name="zxdg_toplevel_v6" version="1">
     <description summary="toplevel surface">
       This interface defines an xdg_surface role that provides requests to treat
       surfaces like windows, allowing to set properties like maximized,
@@ -280,7 +288,7 @@
 	"auxiliary" surfaces, so that the parent is raised when the dialog
 	is raised.
       </description>
-      <arg name="parent" type="object" interface="zxdg_surface_v6" allow-null="true"/>
+      <arg name="parent" type="object" interface="zxdg_toplevel_v6" allow-null="true"/>
     </request>
 
     <request name="set_title">
