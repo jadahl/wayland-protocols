@@ -122,7 +122,7 @@
 
     <enum name="error">
       <entry name="not_constructed" value="1"/>
-      <entry name="already_constructed" value="1"/>
+      <entry name="already_constructed" value="2"/>
     </enum>
 
     <request name="destroy" type="destructor">
