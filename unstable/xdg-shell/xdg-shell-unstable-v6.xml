@@ -668,7 +668,7 @@
 
   </interface>
 
-  <interface name="zxdg_tooltip_v6">
+  <interface name="zxdg_tooltip_v6" version="1">
     <description summary="tooltip surface">
       This interface defines an xdg_tooltip role that provides functionality
       related to tooltip like surfaces.
@@ -694,7 +694,9 @@
     </description>
 
     <request name="destroy" type="destructor">
-      Unmap the tooltip surface and destroy the object.
+      <description summary="destroy the xdg_tooltip object">
+	Unmap the tooltip surface and destroy the object.
+      </description>
     </request>
   </interface>
 
