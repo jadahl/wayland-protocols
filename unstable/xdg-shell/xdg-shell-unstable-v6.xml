@@ -52,6 +52,15 @@
       </description>
     </request>
 
+    <request name="create_positioner">
+      <description summary="create a positioner object">
+	Create a positioner object. A positioner object is used to position
+	surfaces relative to some parent surface. See the interface description
+	for details.
+      </description>
+      <arg name="id" type="new_id" interface="zxdg_positioner_v6"/>
+    </request>
+
     <request name="get_xdg_surface">
       <description summary="create a shell surface from a surface">
 	This creates an xdg_surface for the given surface. While xdg_surface
@@ -89,6 +98,145 @@
       </description>
       <arg name="serial" type="uint" summary="pass this to the pong request"/>
     </event>
+  </interface>
+
+  <interface name="zxdg_positioner_v6" version="1">
+    <description summary="child surface positioner">
+      The xdg_positioner provides an interface for constructing positioning
+      rules used for positioning a child surface relative to another surface
+      in a certain way. It allows methods for defining a rule that will make
+      the child surface stay within the border of the visible area of the
+      screen, with different ways in which the child surface should change
+      its position, including sliding along an axis, or flipping around a
+      rectangle.
+
+      See the various requests for details about possible rules.
+
+      An xdg_positioner object may be re-used when positioning different
+      surfaces until destroyed using xdg_positioner.destroy.
+    </description>
+
+    <enum name="error">
+      <entry name="invalid_rect" value="0"/>
+      <entry name="invalid_anchor" value="1"/>
+      <entry name="invalid_gravity" value="2"/>
+      <entry name="invalid_constrain_action" value="3"/>
+    </enum>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy the xdg_positioner object">
+	Notify the compositor that the xdg_positioner will no longer be used.
+      </description>
+    </request>
+
+    <request name="set_anchor_rect">
+      <description summary="set the anchor rectangle of the parent surface">
+	Specify the anchor rectangle of the parent surface that the child
+	surface will be placed relative to. The rectangle is relative to the
+	window geometry as defined by xdg_surface.set_window_geometry of the
+	parent surface. The rectangle must be at least be 1x1 large.
+
+	When used to position a child surface, the attach rectangle may not
+	extend outside of the window geometry of the parent surface.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
+
+    <enum name="anchor">
+      <entry name="none" value="0"
+	     summary="the center of the anchor rectangle"/>
+      <entry name="left" value="1"
+	     summary="the left edge of the anchor rectangle"/>
+      <entry name="right" value="2"
+	     summary="the right edge of the anchor rectangle"/>
+      <entry name="top" value="4"
+	     summary="the top edge of the anchor rectangle"/>
+      <entry name="bottom" value="8"
+	     summary="the bottom edge of the anchor rectangle"/>
+    </enum>
+
+    <request name="set_anchor">
+      <description summary="set attach rect anchor">
+	Set the anchor position of the anchor rectangle. The anchor position
+	defines where on the anchor rectangle the child surface should
+	positioned relative to. An anchor is a bit mask of zero to two values of
+	the anchor enum. Two values on the same axis (for example left and
+	right) may not be combined.
+
+	If no anchor is set on any axis, the anchor position will be positioned
+	at the center of the anchor rectangle on the unset axis. The default
+	value is "none".
+      </description>
+      <arg name="anchor" type="uint"/>
+    </request>
+
+    <enum name="gravity">
+      <entry name="none" value="0"
+	     summary="center above the anchor position"/>
+      <entry name="left" value="1"
+	     summary="position to the left of the anchor position"/>
+      <entry name="right" value="2"
+	     summary="position to the right of the anchor position"/>
+      <entry name="top" value="4"
+	     summary="position above the anchor position"/>
+      <entry name="bottom" value="8"
+	     summary="position below the anchor position"/>
+    </enum>
+
+    <request name="set_gravity">
+      <description summary="set child surface gravity">
+	The gravity defines in what direction a surface would be positioned,
+	relative to the anchor position on the parent surface. A gravity
+	is a bit mask of zero to two values of the gravity enum. Two values
+	on the same axis (for example left and right) may not be combined.
+
+	If noo gravity is set on any axis, the gravity is set to be "none",
+	means center gravity, meaning the child surface will be centered over
+	the anchor point on the unset axis. The default value is "none".
+      </description>
+      <arg name="gravity" type="uint"/>
+    </request>
+
+    <enum name="constrain_action">
+      <entry name="none" value="0"
+	     summary="Don't move the child surface when constrained"/>
+      <entry name="slide_x" value="1"
+	     summary="Move along the X-axis until unconstrained"/>
+      <entry name="slide_y" value="2"
+	     summary="Move along the Y-axis until unconstrained"/>
+      <entry name="flip_x" value="4"
+	     summary="Invert the anchor and gravity on the X-axis"/>
+      <entry name="flip_y" value="8"
+	     summary="Invert the anchor and gravity on the Y-axis"/>
+    </enum>
+
+    <request name="set_constrain_action">
+      <description summary="set the action to be done when constrained">
+	Specify how the window should be positioned if the originally intended
+	position caused the surface to be partially off screen. The action is
+	set by constructing a bitmask with one bit per axis set describing the
+	action to be taken when the surface is constrained on that axis. If no
+	bit for one axis is set, the compositor will assume that the child surface
+	should not move on that axis when constrained. The default action is
+	none.
+      </description>
+      <arg name="constrain_action" type="uint"/>
+    </request>
+
+    <request name="set_offset">
+      <description summary="set surface position offset">
+	Specify the surface position offset relative to the position of the
+	anchor on the anchor rectangle and the anchor on the surface. For
+	example if the anchor of the anchor rectangle is at (x, y), the surface
+	has the gravity bottom|right, and the offset is (ox, oy), the calculated
+	surface position will be (x + ox, y + oy).
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
   </interface>
 
   <interface name="zxdg_surface_v6" version="1">
@@ -164,8 +312,7 @@
       <arg name="parent" type="object" interface="zxdg_surface_v6"/>
       <arg name="seat" type="object" interface="wl_seat" summary="the wl_seat of the user event"/>
       <arg name="serial" type="uint" summary="the serial of the user event"/>
-      <arg name="x" type="int"/>
-      <arg name="y" type="int"/>
+      <arg name="positioner" type="object" interface="zxdg_positioner_v6"/>
     </request>
 
     <request name="get_tooltip">
@@ -181,8 +328,7 @@
       </description>
       <arg name="id" type="new_id" interface="zxdg_tooltip_v6"/>
       <arg name="parent" type="object" interface="zxdg_surface_v6"/>
-      <arg name="x" type="int"/>
-      <arg name="y" type="int"/>
+      <arg name="positioner" type="object" interface="zxdg_positioner_v6"/>
     </request>
 
     <request name="set_window_geometry">
