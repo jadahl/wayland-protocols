@@ -239,6 +239,19 @@
     </request>
 
     <enum name="constrain_adjustment" bitfield="true">
+      <description summary="constraint adjustments">
+	The constrain adjustment value define ways the compositor will adjust
+	the position of the surface, if the unadjusted position would result
+	in the surface being partly constrained.
+
+	What a constrained surface means is compositor specific, but it could
+	for example be partly outside of the work area of a monitor.
+
+	Multiple constrain adjustment values can be combined, in which case
+	they have a defined precedence. The order of adjustments is: flip,
+	slide then resize.
+      </description>
+
       <entry name="none" value="0">
 	<description summary="don't move the child surface when constrained">
 	  Don't alter the surface position even if it is constrained on some
@@ -258,8 +271,6 @@
 	  x axis until either the edge in the direction of the gravity is
 	  unconstrained or the edge in the opposite direction of the gravity is
 	  constrained.
-
-	  If 'slide_x' is combined with 'flip_x', 'flip_x' takes precedence.
 	</description>
       </entry>
       <entry name="slide_y" value="2">
@@ -275,8 +286,6 @@
 	  y axis until either the edge in the direction of the gravity is
 	  unconstrained or the edge in the opposite direction of the gravity is
 	  constrained.
-
-	  If 'slide_y' is combined with 'flip_y', 'flip_y' takes precedence.
 	</description>
       </entry>
       <entry name="flip_x" value="4">
@@ -287,9 +296,8 @@
 	  'left', change the gravity to 'right' and the anchor to 'right'.
 
 	  If the adjusted position also ends up being constrained, the resulting
-	  position will be the one before the adjustment. If the resulting
-	  position is still constrained, and 'flip_x' is combined with
-	  'slide_x', the position is adjusted according to 'slide_x'.
+	  position of the flip_x adjustment will be the one before the
+	  adjustment.
 	</description>
       </entry>
       <entry name="flip_y" value="8">
@@ -300,9 +308,19 @@
 	  'bottom', change the gravity to 'top' and the anchor to 'top'.
 
 	  If the adjusted position also ends up being constrained, the resulting
-	  position will be the one before the adjustment. If the resulting
-	  position is still constrained, and 'flip_y' is combined with
-	  'slide_y', the position is adjusted according to 'slide_y'.
+	  position of the flip_y adjustment will be the one before the
+	  adjustment.
+	</description>
+      </entry>
+      <entry name="resize_x" value="16">
+	<description summary="horizontally resize the surface">
+	  Resize the surface horizontally so that it is completely
+	  unconstrained.
+	</description>
+      </entry>
+      <entry name="resize_y" value="32">
+	<description summary="vertically resize the surface">
+	  Resize the surface vertically so that it is completely unconstrained.
 	</description>
       </entry>
     </enum>
@@ -1027,6 +1045,8 @@
 	   summary="x position relative to parent surface window geometry"/>
       <arg name="y" type="int"
 	   summary="y position relative to parent surface window geometry"/>
+      <arg name="width" type="int" summary="window geometry width"/>
+      <arg name="height" type="int" summary="window geometry height"/>
     </event>
 
     <event name="popup_done">
