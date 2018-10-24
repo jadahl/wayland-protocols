@@ -29,7 +29,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="xdg_wm_base" version="2">
+  <interface name="xdg_wm_base" version="3">
     <description summary="create desktop-style surfaces">
       The xdg_wm_base interface is exposed as a global object enabling clients
       to turn their wl_surfaces into windows in a desktop environment. It
@@ -115,7 +115,7 @@
     </event>
   </interface>
 
-  <interface name="xdg_positioner" version="2">
+  <interface name="xdg_positioner" version="3">
     <description summary="child surface positioner">
       The xdg_positioner provides a collection of rules for the placement of a
       child surface relative to a parent surface. Rules can be defined to ensure
@@ -359,7 +359,7 @@
     </request>
   </interface>
 
-  <interface name="xdg_surface" version="2">
+  <interface name="xdg_surface" version="3">
     <description summary="desktop user interface surface base interface">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface.
@@ -528,7 +528,7 @@
     </event>
   </interface>
 
-  <interface name="xdg_toplevel" version="2">
+  <interface name="xdg_toplevel" version="3">
     <description summary="toplevel surface">
       This interface defines an xdg_surface role which allows a surface to,
       among other things, set window-like properties such as maximize,
@@ -1016,7 +1016,7 @@
     </event>
   </interface>
 
-  <interface name="xdg_popup" version="2">
+  <interface name="xdg_popup" version="3">
     <description summary="short-lived, popup surfaces for menus">
       A popup surface is a short-lived, temporary surface. It can be used to
       implement for example menus, popovers, tooltips and other similar user
@@ -1139,6 +1139,16 @@
 	point.
       </description>
     </event>
+
+    <!-- Version 3 additions -->
+
+    <request name="move" since="3">
+      <description summary="move the popup given a new positioner">
+	Move an already mapped popup. The new placement will not take affect
+	until the parent surface state is applied.
+      </description>
+      <arg name="positioner" type="object" interface="xdg_positioner"/>
+    </request>
 
   </interface>
 </protocol>
